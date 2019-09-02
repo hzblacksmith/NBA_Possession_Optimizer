@@ -1,5 +1,6 @@
 # 2019 NBA Hackathon Final Round
 **Team: 4PPP**
+
 **Members: Skyler Shi, Frank Li, Brandon Pollack, Faizan Abdullah**
 
 ## Quick Start
