@@ -19,3 +19,11 @@
 
 ### combine_csv_to_df.py
 1. Concatenate csv files to a master one.
+
+
+## Visualizing Everything
+We want to visualize our work for easier understanding and intuition checks.
+
+### Shot Charts
+We use the NBA stats defined shot chart. The zones are indexed as below for easier coding.
+![Blank Shot Chart](blank_shot_chart.jpg)
