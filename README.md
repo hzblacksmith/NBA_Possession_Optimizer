@@ -28,9 +28,6 @@ We want to visualize our work for easier understanding and intuition checks.
 We use the NBA stats defined shot chart. The zones are indexed as below for easier coding.
 ![Blank Shot Chart](Pictures/blank_shot_chart.jpg)
 
-Note that the above diagram was just used to label shotzones. The proportions of it are incorrect. We use the diagram from NBA stats to actually divide shot zones.
-![Actual Shot Chart](Pictures/shotchart.png)
-
 
 ## App Interface
 1. Get instructions on installing plotly here: https://plot.ly/python/getting-started/
