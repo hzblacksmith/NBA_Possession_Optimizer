@@ -3,14 +3,15 @@
 
 **Members: Skyler Shi, Frank Li, Brandon Pollack, Faizan Abdullah**
 
-## Quick Start
+## Exploratory Data Analysis
 
 1. Download `Basketball` folder containing hackathon data from Box.
 2. Move `Basketball` under this project's root directory.
 3. Unzip the tracking files `CLEBOS.zip`, `CLEGSW.zip`, `SASGSW.zip` into same directory.
 4. Run `Testing_Data.ipynb` to see data in pandas dataframes.
 
-## Data Scrape
+## Data Scraping
+NBA didn't provide us with shot-zone data. Hence we scraped stats.nba.com for the shot-zone data.
 ### shot_scrape.py
 1. `url_to_df` function grabs json file in url and converts to pandas dataFrame. 
 2. First grab the mapping from player name to player_id and their team info for 2016-17 season from https://stats.nba.com/leaders/?Season=2016-17&SeasonType=Regular%20Season page. The output file is called `player_info_1617.csv`.
