@@ -2,12 +2,20 @@ import pandas as pd
 from matplotlib.patches import Circle, Rectangle, Arc
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy import ones,vstack
+from numpy import ones, vstack
 from numpy.linalg import lstsq
 import math
 
-# print(list(player_shot_1617_df.columns.values))
-conf_fnl_team_shot_1617_df = pd.read_csv('conf_fnl_team_shot_1617.csv')
+from extract_conf_fnl_and_fnl import cle_bos_df, gsw_cle_df, gsw_sas_df
+
+# conf_fnl_team_shot_1617_df = pd.read_csv('conf_fnl_team_shot_1617.csv')
+# cle_bos_df = pd.read_csv('C:\\Users\lilif\Desktop\\NBA Hackathon\\2019 Basketball Analytics\Basketball'
+#                          '\player_shot_chart_1617\playoffs\cle_bos_shots.csv')
+# gsw_sas_df = pd.read_csv('C:\\Users\lilif\Desktop\\NBA Hackathon\\2019 Basketball Analytics\Basketball'
+#                          '\player_shot_chart_1617\playoffs\gsw_sas_shots.csv')
+# gsw_cle_df = pd.read_csv('C:\\Users\lilif\Desktop\\NBA Hackathon\\2019 Basketball Analytics\Basketball'
+#                          '\player_shot_chart_1617\playoffs\gsw_cle_shots.csv')
+
 # aaron_brooks_shot_1617_df = pd.read_csv('player_shot_chart_1617.csv')
 # bos_shot_1617_df = player_shot_1617_df.loc[(player_shot_1617_df['TEAM_NAME'] == 'Boston Celtics')]
 # cle_shot_1617_df = player_shot_1617_df.loc[(player_shot_1617_df['TEAM_NAME'] == 'Cleveland Cavaliers')]
@@ -24,7 +32,7 @@ def drop_half_court_shot(shot_chart_df):
     shot_chart_df.drop(index_name, inplace=True)
 
 
-drop_half_court_shot(conf_fnl_team_shot_1617_df)
+# drop_half_court_shot(conf_fnl_team_shot_1617_df)
 # drop_half_court_shot(bos_shot_1617_df)
 # drop_half_court_shot(cle_shot_1617_df)
 # drop_half_court_shot(sas_shot_1617_df)
@@ -292,13 +300,17 @@ def identify_shot_zone(df):
             # top 3
             elif wing_segment_a_m * x + wing_segment_a_c < y and wing_segment_b_m * x + wing_segment_b_c < y:
                 zone.iloc[idx] = 11
+    return df
 
 
-identify_shot_zone(conf_fnl_team_shot_1617_df)
-print(conf_fnl_team_shot_1617_df)
+cle_bos_shot_zone_added_df = identify_shot_zone(cle_bos_df)
+gsw_sas_shot_zone_added_df = identify_shot_zone(gsw_sas_df)
+gsw_cle_shot_zone_added_df = identify_shot_zone(gsw_cle_df)
+# print(conf_fnl_team_shot_1617_df)
 
 plt.figure(figsize=(12, 11))
-plt.scatter(conf_fnl_team_shot_1617_df.LOC_X[-10:], conf_fnl_team_shot_1617_df.LOC_Y[-10:])
+plt.scatter(cle_bos_shot_zone_added_df.LOC_X.loc[cle_bos_shot_zone_added_df['SHOT_ZONE'] == 8],
+            cle_bos_shot_zone_added_df.LOC_Y.loc[cle_bos_shot_zone_added_df['SHOT_ZONE'] == 8])
 plt.scatter(90, 0)
 draw_court(outer_lines=True)
 # Descending values along the axis from left to right
@@ -310,4 +322,8 @@ plt.ylim(422.5, -47.5)
 plt.show()
 # plt.savefig('shot_zone.png')
 
-conf_fnl_team_shot_1617_df.to_csv('conf_fnl_team_shot_1617_w_shot_zone.csv')
+# conf_fnl_team_shot_1617_df.to_csv('conf_fnl_team_shot_1617_w_shot_zone.csv')
+
+# cle_bos_df.to_csv('cle_bos_shot_w_shot_zone.csv')
+# gsw_sas_df.to_csv('gsw_sas_shot_w_shot_zone.csv')
+# gsw_cle_df.to_csv('gsw_cle_shot_w_shot_zone.csv')
