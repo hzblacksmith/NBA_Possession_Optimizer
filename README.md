@@ -11,7 +11,7 @@
 4. Run `Testing_Data.ipynb` to see data in pandas dataframes.
 
 ## Data Scraping
-NBA didn't provide us with shot-zone data. Hence we scraped stats.nba.com for the shot-zone data.
+NBA didn't provide us with shot-zone data. Hence we scraped stats.nba.com for the shot-zone data. The final segmentation is similar with this: https://stats.nba.com/events/?flag=3&CFID=33&CFPARAMS=2016-17&PlayerID=204001&ContextMeasure=FGA&Season=2016-17&section=player&sct=zone
 ### shot_scrape.py
 1. `url_to_df` function grabs json file in url and converts to pandas dataFrame. 
 2. First grab the mapping from player name to player_id and their team info for 2016-17 season from https://stats.nba.com/leaders/?Season=2016-17&SeasonType=Regular%20Season page. The output file is called `player_info_1617.csv`.
