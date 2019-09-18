@@ -29,6 +29,12 @@ We want to visualize our work for easier understanding and intuition checks.
 We use the NBA stats defined shot chart. The zones are indexed as below for easier coding.
 ![Blank Shot Chart](Pictures/blank_shot_chart.jpg)
 
+### Optimization
+Factors to consider:
+1. Lineup
+2. Shot zone
+3. Time/on court situation (score)
+4. Who took the shot?
 
 ## App Interface
 1. Get instructions on installing plotly here: https://plot.ly/python/getting-started/
