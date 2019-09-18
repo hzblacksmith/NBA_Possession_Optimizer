@@ -311,7 +311,6 @@ gsw_cle_shot_zone_added_df = identify_shot_zone(gsw_cle_df)
 plt.figure(figsize=(12, 11))
 plt.scatter(cle_bos_shot_zone_added_df.LOC_X.loc[cle_bos_shot_zone_added_df['SHOT_ZONE'] == 8],
             cle_bos_shot_zone_added_df.LOC_Y.loc[cle_bos_shot_zone_added_df['SHOT_ZONE'] == 8])
-plt.scatter(90, 0)
 draw_court(outer_lines=True)
 # Descending values along the axis from left to right
 # Adjust plot limits to just fit in half court
