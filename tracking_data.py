@@ -7,24 +7,23 @@ import matplotlib.pyplot as plt
 
 srt_path = "C:\\Users\lilif\Desktop\\NBA Hackathon\\2019 Basketball Analytics\Basketball\Player Tracking"
 
-bos_1_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
-bos_1_track = srt_path + "\CLEBOS\\2017051702_nba-bos_TRACKING.jsonl"
-bos_2_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
+ecf_1_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
+ecf_1_track = srt_path + "\CLEBOS\\2017051702_nba-bos_TRACKING.jsonl"
 
-bos_2_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
-bos_2_track = srt_path + "\CLEBOS\\2017051702_nba-bos_TRACKING.jsonl"
+ecf_2_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
+ecf_2_track = srt_path + "\CLEBOS\\2017051702_nba-bos_TRACKING.jsonl"
 
-cle_3_events = srt_path + "\CLEBOS\\2017052106_nba-cle_EVENTS.jsonl"
-cle_3_track = srt_path + "\CLEBOS\\2017052106_nba-cle_TRACKING.jsonl"
+ecf_3_events = srt_path + "\CLEBOS\\2017052106_nba-cle_EVENTS.jsonl"
+ecf_3_track = srt_path + "\CLEBOS\\2017052106_nba-cle_TRACKING.jsonl"
 
-cle_4_events = srt_path + "\CLEBOS\\2017052306_nba-cle_EVENTS.jsonl"
-cle_4_track = srt_path + "\CLEBOS\\2017052306_nba-cle_TRACKING.jsonl"
+ecf_4_events = srt_path + "\CLEBOS\\2017052306_nba-cle_EVENTS.jsonl"
+ecf_4_track = srt_path + "\CLEBOS\\2017052306_nba-cle_TRACKING.jsonl"
 
-bos_5_events = srt_path + "\CLEBOS\\2017052502_nba-box_EVENTS.jsonl"
-bos_5_track = srt_path + "\CLEBOS\\2017052502_nba-box_EVENTS.jsonl"
+ecf_5_events = srt_path + "\CLEBOS\\2017052502_nba-box_EVENTS.jsonl"
+ecf_5_track = srt_path + "\CLEBOS\\2017052502_nba-box_EVENTS.jsonl"
 
-# gsw_1_events =
-# gsw_1_track =
+wcf_1_events = srt_path + "\SASGSW\\2017051410_nba-gsw_EVENTS.jsonl"
+wcf_1_track = srt_path + "\SASGSW\\2017051410_nba-gsw_TRACKING.jsonl"
 #
 # gsw_2_events =
 
@@ -244,8 +243,8 @@ def added_players_team_to_event_info(path_track, path_events, event):
 
 
 # print(added_players_team_to_event_info(sas_3_track, sas_3_events, 'TOUCH'))
-added_players_team_to_event_info(bos_1_track, bos_1_events, 'TOUCH').to_csv('bos_1_touch.csv')
-added_players_team_to_event_info(bos_1_track, bos_1_events, 'SHOT').to_csv('bos_1_shot.csv')
+added_players_team_to_event_info(ecf_1_track, ecf_1_events, 'TOUCH').to_csv('ecf_1_touch.csv')
+added_players_team_to_event_info(ecf_1_track, ecf_1_events, 'SHOT').to_csv('ecf_1_shot.csv')
 
 
 def slice_to_possessions(df):
@@ -414,11 +413,11 @@ def draw_court(ax=None, color='black', lw=4, outer_lines=False):
     return ax
 
 plt.figure(figsize=(12, 11))
-plt.scatter(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][1]['xyz'],
-            get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][1]['xyz'])
-
-plt.scatter(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'],
-            get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'])
+# plt.scatter(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][1]['xyz'],
+#             get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][1]['xyz'])
+#
+# plt.scatter(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'],
+#             get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'])
 draw_court(outer_lines=True)
 # Descending values along the axis from left to right
 # Adjust plot limits to just fit in half court
@@ -427,7 +426,7 @@ plt.xlim(-250, 250)
 # in order to place the hoop by the top of plot
 plt.ylim(422.5, -47.5)
 plt.show()
-print(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'],
-      get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'])
+# print(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'],
+#       get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'])
 # print(get_positions_at_shot(bos_1_track, bos_1_events).away_players[0][4]['xyz'][0],
 #       get_positions_at_shot(bos_1_track, bos_1_events).away_players[0][4]['xyz'][1])
