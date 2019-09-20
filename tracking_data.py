@@ -5,6 +5,36 @@ from matplotlib.patches import Circle, Rectangle, Arc
 import matplotlib.pyplot as plt
 
 
+srt_path = "C:\\Users\lilif\Desktop\\NBA Hackathon\\2019 Basketball Analytics\Basketball\Player Tracking"
+
+ecf_1_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
+ecf_1_track = srt_path + "\CLEBOS\\2017051702_nba-bos_TRACKING.jsonl"
+
+ecf_2_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
+ecf_2_track = srt_path + "\CLEBOS\\2017051702_nba-bos_TRACKING.jsonl"
+
+ecf_3_events = srt_path + "\CLEBOS\\2017052106_nba-cle_EVENTS.jsonl"
+ecf_3_track = srt_path + "\CLEBOS\\2017052106_nba-cle_TRACKING.jsonl"
+
+ecf_4_events = srt_path + "\CLEBOS\\2017052306_nba-cle_EVENTS.jsonl"
+ecf_4_track = srt_path + "\CLEBOS\\2017052306_nba-cle_TRACKING.jsonl"
+
+ecf_5_events = srt_path + "\CLEBOS\\2017052502_nba-box_EVENTS.jsonl"
+ecf_5_track = srt_path + "\CLEBOS\\2017052502_nba-box_EVENTS.jsonl"
+
+wcf_1_events = srt_path + "\SASGSW\\2017051410_nba-gsw_EVENTS.jsonl"
+wcf_1_track = srt_path + "\SASGSW\\2017051410_nba-gsw_TRACKING.jsonl"
+#
+# gsw_2_events =
+
+
+sas_3_events = srt_path + "\SASGSW\\2017052027_nba-sas_EVENTS.jsonl"
+sas_3_track = srt_path + "\SASGSW\\2017052027_nba-sas_TRACKING.jsonl"
+
+sas_4_events = srt_path + "\SASGSW\\2017052227_nba-sas_EVENTS.jsonl"
+sas_4_track = srt_path + "\SASGSW\\2017052027_nba-sas_track.jsonl"
+
+
 def swap_positions(lst, pos1, pos2):
     """
     :param lst: target list
@@ -35,14 +65,17 @@ def get_event_time_player_from_events(path_events, event):
     :param event: the event we are interested in
     :return: the wall clock and corresponding player ID of events
     """
-    events_df = pd.read_json(path_events, lines=True, encoding='latin1')
+    events_df = deepcopy(pd.read_json(path_events, lines=True, encoding='latin1'))
     # find all events
     events = events_df.loc[events_df['eventType'] == event]
     # find wall clock of such events
     wall_clock = events["wallClock"]
     # find corresponding player id
     player_id = events["playerId"]
-    return wall_clock, player_id
+    game_clock = events['gameClock']
+    period = events['period']
+    return wall_clock, player_id, game_clock, period
+
 
 # from now on we work on the copy to not to mutate the original df
 def modify_xyz(df, player_flag: bool):
@@ -60,7 +93,9 @@ def modify_xyz(df, player_flag: bool):
     if player_flag is True:
         for i in range(len(result)):
             pos_lst = result[i]['xyz']
+            # multiply coordinates by 10
             enlarged = multiply_elements_in_list(pos_lst, float(10))
+            # swap x and y
             swapped = swap_positions(enlarged, 0, 1)
             swapped.pop()
             result[i]['xyz'] = swapped
@@ -68,9 +103,10 @@ def modify_xyz(df, player_flag: bool):
         pos_lst = result['xyz']
         enlarged = multiply_elements_in_list(pos_lst, float(10))
         swapped = swap_positions(enlarged, 0, 1)
-        swapped.pop()
+        # some ball xyz only has two elements... cost tons of time
+        if len(swapped) == 3:
+            swapped.pop()
         result['xyz'] = swapped
-
     return result
 
 
@@ -81,77 +117,81 @@ def map_to_shot_zone_xy(df, player_flag: bool):
     :param player_flag: whether it is player or ball position
     :return: modified dataframe
     """
-    result = modify_xyz(df, player_flag)
+    result = deepcopy(modify_xyz(df, player_flag))
     if player_flag is True:
         for i in range(len(result)):
             pos_lst = result[i]['xyz']
             if pos_lst[1] < 0:
-                pos_lst[0] = -1 * pos_lst[0]
                 pos_lst[1] += 422.5
             elif pos_lst[1] >= 0:
-                pos_lst[1] = -1 * pos_lst[1] + 422.5
+                pos_lst[0] *= -1
+                pos_lst[1] = 422.5 - pos_lst[1]
+
     else:
         pos_lst = result['xyz']
         if pos_lst[1] < 0:
-            pos_lst[0] = -1 * pos_lst[0]
             pos_lst[1] += 422.5
         elif pos_lst[1] >= 0:
+            pos_lst[0] *= -1
             pos_lst[1] = -1 * pos_lst[1] + 422.5
     return result
 
 
-def get_positions_at_shot(path_tracking, path_events):
+def get_event_info(path_tracking, path_events, event):
     """
 
     :param path_tracking:
     :param path_events:
+    :param event:
     :return: a data frame containing shooter as well as away player, home player and ball positions
     """
-    tracking_df = pd.read_json(path_tracking, lines=True, encoding='latin1')
+    tracking_df = deepcopy(pd.read_json(path_tracking, lines=True, encoding='latin1'))
     # retrieve wall clock of shots
-    wall_clock = list(get_event_time_player_from_events(path_events, 'SHOT')[0])
-    shooters = list(get_event_time_player_from_events(path_events, 'SHOT')[1])
-    # retrieve all shot rows
-    shot_event_row = tracking_df[tracking_df.wallClock.isin(wall_clock)]
-    # print(shot_event_row.awayPlayers)
+    wall_clock = list(get_event_time_player_from_events(path_events, event)[0])
+    # print(wall_clock)
+    players = list(get_event_time_player_from_events(path_events, event)[1])
+    game_clock = list(get_event_time_player_from_events(path_events, event)[2])
+    period = list(get_event_time_player_from_events(path_events, event)[3])
+    # retrieve all rows
+    tracking_wall_clock = [value for value in wall_clock if value in tracking_df['wallClock'].values]
+    event_row = tracking_df.loc[tracking_df['wallClock'].isin(tracking_wall_clock)]
+
+    # print(event_row)
+    # print(event_row.values)
+    # if wall_clock != event_row:
+    #     diff = [x for x in wall_clock if x not in event_row]
+    #     print(len(diff))
+    #     for d in diff:
+    #         idx = bisect.bisect(tracking_df['wallClock'].tolist(), d)
+            # print(idx)
+    # print(event_row)
     lst = []
-    for i in range(len(shot_event_row)):
-        away_players_raw = shot_event_row.awayPlayers.iloc[i]
+    for i in range(len(wall_clock)):
+        away_players_raw = event_row.awayPlayers.iloc[i]
         away_players = map_to_shot_zone_xy(away_players_raw, True)
-        home_players_raw = shot_event_row.homePlayers.iloc[i]
+        home_players_raw = event_row.homePlayers.iloc[i]
         home_players = map_to_shot_zone_xy(home_players_raw, True)
-        ball_raw = shot_event_row.ball.iloc[i]
+        ball_raw = event_row.ball.iloc[i]
         ball = map_to_shot_zone_xy(ball_raw, False)
-        shooter = shooters[i]
-        lst.append([shooter, away_players, home_players, ball])
+        player = players[i]
+        time = event_row.wallClock.iloc[i]
+        game_c = game_clock[i]
+        prd = period[i]
+        lst.append([time, game_c, prd, player, away_players, home_players, ball])
     result = pd.DataFrame(lst)
-    result.columns = ['shooter', 'away_players', 'home_players', 'ball']
+    result.columns = ['wallClock', 'gameClock', 'period', event + ' player', 'away_players', 'home_players', 'ball']
     return result
 
 
-srt_path = "C:\\Users\lilif\Desktop\\NBA Hackathon\\2019 Basketball Analytics\Basketball\Player Tracking"
-
-bos_1_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
-bos_1_track = srt_path + "\CLEBOS\\2017051702_nba-bos_TRACKING.jsonl"
-bos_2_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
-
-bos_2_events = srt_path + "\CLEBOS\\2017051702_nba-bos_EVENTS.jsonl"
-bos_2_track = srt_path + "\CLEBOS\\2017051702_nba-bos_TRACKING.jsonl"
-
-cle_3_events = srt_path + "\CLEBOS\\2017052106_nba-cle_EVENTS.jsonl"
-cle_3_track = srt_path + "\CLEBOS\\2017052106_nba-cle_TRACKING.jsonl"
-
-sas_3_events = srt_path + "\SASGSW\\2017052027_nba-sas_EVENTS.jsonl"
-sas_3_track = srt_path + "\SASGSW\\2017052027_nba-sas_TRACKING.jsonl"
-bos_1_shot = get_positions_at_shot(bos_1_track, bos_1_events)
+# print(get_event_info(cle_4_track, cle_4_events, 'TOUCH'))
+# print(check_players_team(get_positions_at_event(bos_1_track, bos_1_events, 'SHOT')))
 
 
 def calculate_closest_distance(player_pos, opponent):
     """
-
     :param player_pos: [x, y] position of player
     :param opponent: a list of opponent players
-    :return: the closest distance between opponent player and player
+    :return: the closest distance between opponent players and the player
     """
     flag = np.inf
     for i in range(len(opponent)):
@@ -162,12 +202,11 @@ def calculate_closest_distance(player_pos, opponent):
     return flag
 
 
-def closest_dist(path_track, path_events):
-    df = get_positions_at_shot(path_track, path_events)
-    shooter = df['shooter']
-    away = df['away_players']
-    # print(away)
-    home = df['home_players']
+def added_closest_dist_to_event_info(path_track, path_events, event):
+    event_df = deepcopy(get_event_info(path_track, path_events, event))
+    shooter = event_df[event + ' player']
+    away = event_df['away_players']
+    home = event_df['home_players']
     dist = []
     for i in range(len(shooter)):
         for p in range(5):
@@ -178,8 +217,68 @@ def closest_dist(path_track, path_events):
                 shooter_pos = home[i][p]['xyz']
                 d = calculate_closest_distance(shooter_pos, away[i])
         dist.append(d)
-    df['shortest_dist'] = dist
-    print(df.shortest_dist.loc[df['shortest_dist'] > 40.0])
+    event_df['shortest_dist'] = dist
+    return event_df
+
+
+# added_closest_dist_to_event_info(bos_1_track, bos_1_events, 'TOUCH').to_csv('bos_1_touch_dist.csv')
+
+
+def added_players_team_to_event_info(path_track, path_events, event):
+    df = added_closest_dist_to_event_info(path_track, path_events, event)
+    result = deepcopy(df)
+    players = result[event + ' player']
+    away = result['away_players']
+    home = result['home_players']
+    team = []
+    for i in range(len(result)):
+        for j in range(len(away[i])):
+            if players[i] in away[i][j]['playerId']:
+                t = 0
+            elif players[i] in home[i][j]['playerId']:
+                t = 1
+        team.append(t)
+    result['team'] = team
+    return result
+
+
+# print(added_players_team_to_event_info(sas_3_track, sas_3_events, 'TOUCH'))
+added_players_team_to_event_info(ecf_1_track, ecf_1_events, 'TOUCH').to_csv('ecf_1_touch.csv')
+added_players_team_to_event_info(ecf_1_track, ecf_1_events, 'SHOT').to_csv('ecf_1_shot.csv')
+
+
+def slice_to_possessions(df):
+    start_flag:bool = False
+    end_flag:bool = False
+    shot_clock = df['shotClock']
+    game_clock = df['gameClock']
+    ball_pos_df = df['ball']
+    away = df['awayPlayers']
+    home = df['homePlayers']
+    df['possession_index'] = np.NaN
+    poss_idx = df['possession_index']
+    ball_pos = map_to_shot_zone_xy(ball_pos_df, False)
+    away_pos = map_to_shot_zone_xy(away, True)
+    home_pos = map_to_shot_zone_xy(home, True)
+    pos_cnt = 0
+    poss_idx.iloc[0] = 0
+    # for i in range(1, len(df)):
+    #     while shot_clock.iloc[i+1] > shot_clock.iloc[i] & shot_clock.iloc[i+1] == 24.00:
+    #     while game_clock.iloc[i] >= 24.00:
+    #         if shot_clock.iloc[i] == 24.00:
+    #             start_flag = True
+    #         while start_flag:
+    #             poss_idx.iloc[i] =
+    #         if shot_clock.iloc[i+1] > shot_clock.iloc[i] & shot_clock.iloc[i+1] == 24.00:
+    #             poss_idx.iloc[i+1] = i
+
+
+# print(determine_ball_handler(bos_2_track, bos_2_events))
+# print(pd.read_json(bos_1_track, lines=True, encoding='latin1')['awayPlayers'])
+# print(all(elem in get_event_time_player_from_events(bos_1_events, "TOUCH")[2]
+#           for elem in pd.read_json(bos_1_track, lines=True, encoding='latin1')['gameClock']))
+
+
 
 
 # closest_dist(bos_1_track, bos_1_events)
@@ -314,8 +413,11 @@ def draw_court(ax=None, color='black', lw=4, outer_lines=False):
     return ax
 
 plt.figure(figsize=(12, 11))
-plt.scatter(get_positions_at_shot(bos_1_track, bos_1_events).away_players[0][4]['xyz'][0],
-            get_positions_at_shot(bos_1_track, bos_1_events).away_players[0][4]['xyz'][1])
+# plt.scatter(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][1]['xyz'],
+#             get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][1]['xyz'])
+#
+# plt.scatter(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'],
+#             get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'])
 draw_court(outer_lines=True)
 # Descending values along the axis from left to right
 # Adjust plot limits to just fit in half court
@@ -323,6 +425,8 @@ plt.xlim(-250, 250)
 # Descending values along th y axis from bottom to top
 # in order to place the hoop by the top of plot
 plt.ylim(422.5, -47.5)
-# plt.show()
-print(get_positions_at_shot(bos_1_track, bos_1_events).away_players[0][4]['xyz'][0],
-      get_positions_at_shot(bos_1_track, bos_1_events).away_players[0][4]['xyz'][1])
+plt.show()
+# print(get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'],
+#       get_event_info(bos_1_track, bos_1_events, 'SHOT')['ball'][2]['xyz'])
+# print(get_positions_at_shot(bos_1_track, bos_1_events).away_players[0][4]['xyz'][0],
+#       get_positions_at_shot(bos_1_track, bos_1_events).away_players[0][4]['xyz'][1])
