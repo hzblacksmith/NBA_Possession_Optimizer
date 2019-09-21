@@ -33,6 +33,15 @@ for file_name in file_names:
     })
 
     result['FG_pctg'] = result['NUM_SHOTS_MADE'] / result['NUM_SHOTS_ATTEMPTED']
+    result['ppp'] = 0
+    for idx, row in result.iterrows():
+
+        if (row['SHOT_ZONE'] in (9,10,11,12,13)):
+            result.loc[idx,'ppp'] = row['FG_pctg']*3
+        else:
+            result.loc[idx,'ppp'] = row['FG_pctg']*2
 
     result.to_csv('Player_shot_zones_agg/' + file_name[0:8] + '_agg.csv')
+
+
     

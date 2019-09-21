@@ -1,3 +1,7 @@
+/* .modebar{
+    display: none !important;
+} */
+
 
 #info-select .Select-multi-value-wrapper .Select-value div{
     background-color: #1e1e1e;
