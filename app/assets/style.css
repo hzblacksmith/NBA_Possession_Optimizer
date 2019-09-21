@@ -71,11 +71,40 @@ html, body {
     height: 100%;
 }
 
+#actual_player {
+    width: 50%;
+    float: left;
+    display: block;
+}
+
+#actual_player div{
+    display: inline-block
+}
+
 #actual_player_img {
-    display: inline-block;
+    display: block;
 }
 
 #actual_player_name {
     display: inline-block;
 }
 
+
+#optimized_player {
+    width: 50%;
+    float: right;
+    display: block
+}
+
+#optimized_player div{
+    display: inline-block
+}
+
+#optimized_player_img {
+    display: block;
+    
+}
+
+#optimized_player_name {
+    display: inline-block;
+}

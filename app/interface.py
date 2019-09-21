@@ -92,11 +92,40 @@ app.layout = html.Div(
                                             'width': '80px',
                                             'height': '80px'
                                         }),
+                                # html.Div(
+                                # 'Actual Player / Shot',
+                                # ),
                                 html.Div(
                                     id = 'actual_player_name',
                                 ),
+                                
                                 dcc.Graph(
-                                    id = 'actual_player_graph'
+                                    id = 'actual_player_graph',
+                                    style = {
+                                        'width': '90%'
+                                    }
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            id = 'optimized_player',
+                            children = [
+                                html.Img(id = 'optimized_player_img',
+                                        style = {
+                                            'width': '80px',
+                                            'height': '80px'
+                                        }),
+                                # html.Div(
+                                # 'Actual Player / Shot',
+                                # ),
+                                html.Div(
+                                    id = 'optimized_player_name',
+                                ),
+                                dcc.Graph(
+                                    id = 'optimized_player_graph',
+                                    style = {
+                                        'width': '90%'
+                                    }
                                 )
                             ]
                         )
@@ -116,7 +145,6 @@ app.layout = html.Div(
      Input('possession-select-dropdown', 'value')]
 )
 def update_main_graph(game_value, possession_value):
-
     # initializaion: only draw the court
     if (game_value == "Null Game" or possession_value == "Null"):
         return {
@@ -179,25 +207,172 @@ def update_main_graph(game_value, possession_value):
 
 @app.callback(
     [Output('actual_player_img', 'src'),
-     Output('actual_player_name', 'children')],
+     Output('actual_player_name', 'children'),
+     Output('actual_player_graph', 'figure'),
+     Output('optimized_player_img', 'src'),
+     Output('optimized_player_name', 'children'),
+     Output('optimized_player_graph', 'figure'),], 
     [Input('main-graph', 'hoverData')])
 def display_hover_data(hoverData):
     if hoverData is None:
-        raise PreventUpdate
+        return (app.get_asset_url('Pictures/question.png'),
+                "None",
+                {
+                    'layout' : go.Layout(
+                            # draw the court
+                            shapes = court_shapes,
+                            xaxis=dict(showgrid=False,
+                                    range=[-300,300],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            yaxis=dict(showgrid=False,
+                                    range=[422.5,-47.5],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            margin=go.layout.Margin(
+                                l=0,
+                                r=0,
+                                b=0,
+                                t=0,
+                            ),
+                        )
+                },
+                app.get_asset_url('Pictures/question.png'),
+                "None",
+                {
+                    'layout' : go.Layout(
+                            # draw the court
+                            shapes = court_shapes,
+                            xaxis=dict(showgrid=False,
+                                    range=[-300,300],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            yaxis=dict(showgrid=False,
+                                    range=[422.5,-47.5],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            margin=go.layout.Margin(
+                                l=0,
+                                r=0,
+                                b=0,
+                                t=0,
+                            ),
+                        )
+                }
+                )
+    
     player_ss_id = hoverData['points'][0]['customdata']
     try:
         player_name = ss_id_to_names[player_ss_id]
     except:
         player_name = "Unknown"
-    print(player_name)
+
     if player_name == "Unknown":
         return (app.get_asset_url('Pictures/question.png'),
-                "Unknown Player"
+                "Unknown Player",
+                {
+                    'layout' : go.Layout(
+                            # draw the court
+                            shapes = court_shapes,
+                            xaxis=dict(showgrid=False,
+                                    range=[-300,300],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            yaxis=dict(showgrid=False,
+                                    range=[422.5,-47.5],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            margin=go.layout.Margin(
+                                l=0,
+                                r=0,
+                                b=0,
+                                t=0,
+                            ),
+                        )
+                },
+                app.get_asset_url('Pictures/question.png'),
+                "Unknown Player",
+                {
+                    'layout' : go.Layout(
+                            # draw the court
+                            shapes = court_shapes,
+                            xaxis=dict(showgrid=False,
+                                    range=[-300,300],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            yaxis=dict(showgrid=False,
+                                    range=[422.5,-47.5],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            margin=go.layout.Margin(
+                                l=0,
+                                r=0,
+                                b=0,
+                                t=0,
+                            ),
+                        )
+                }
                 )
     else:
         return (app.get_asset_url('Pictures/{}.png'.format(player_name)),
-                "{}".format(player_name)
+                "{}".format(player_name),
+                {
+                    'layout' : go.Layout(
+                            # draw the court
+                            shapes = court_shapes,
+                            xaxis=dict(showgrid=False,
+                                    range=[-300,300],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            yaxis=dict(showgrid=False,
+                                    range=[422.5,-47.5],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            margin=go.layout.Margin(
+                                l=0,
+                                r=0,
+                                b=0,
+                                t=0,
+                            ),
+                        )
+                },
+                app.get_asset_url('Pictures/{}.png'.format(player_name)),
+                "{}".format(player_name),
+                {
+                    'layout' : go.Layout(
+                            # draw the court
+                            shapes = court_shapes,
+                            xaxis=dict(showgrid=False,
+                                    range=[-300,300],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            yaxis=dict(showgrid=False,
+                                    range=[422.5,-47.5],
+                                    showline=False,
+                                    zeroline=False,
+                                    showticklabels=False),
+                            margin=go.layout.Margin(
+                                l=0,
+                                r=0,
+                                b=0,
+                                t=0,
+                            ),
+                        )
+                }
                 )
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
